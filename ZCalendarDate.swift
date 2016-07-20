@@ -81,14 +81,14 @@ public func < (lhs: ZCalendarYear, rhs: ZCalendarYear) -> Bool {
 //
 
 public class ZCalendarMonth: ZCalendarYear {
-	let month: Int
+	public let month: Int
 
-	init(year: Int, month: Int) {
+	public init(year: Int, month: Int) {
 		self.month = month
 		super.init(year: year)
 	}
 
-	init?(integerValue: Int) {
+	public init?(integerValue: Int) {
 		var value = integerValue
 		let month = value % 100; value /= 100
 		let year = value
@@ -115,17 +115,17 @@ public class ZCalendarMonth: ZCalendarYear {
 		return 100 * self.year + self.month;
 	}
 
-	var firstCalendarDateOfMonth: ZCalendarDate {
+	public var firstCalendarDateOfMonth: ZCalendarDate {
 		return ZCalendarDate(year: self.year, month: month, day: 1)
 	}
 
-	var lastCalendarDateOfMonth: ZCalendarDate {
+	public var lastCalendarDateOfMonth: ZCalendarDate {
 		let firstDateOfMonth = self.firstCalendarDateOfMonth.date
 		let range = _gregorian.rangeOfUnit(.Day, inUnit: .Month, forDate: firstDateOfMonth)
 		return ZCalendarDate(year: self.year, month: self.month, day: range.length)
 	}
 
-	func calendarMonthOffsetByMonths(months: Int) -> ZCalendarMonth {
+	public func calendarMonthOffsetByMonths(months: Int) -> ZCalendarMonth {
 		let offsetComponents = NSDateComponents()
 		offsetComponents.month = months
 
@@ -135,15 +135,15 @@ public class ZCalendarMonth: ZCalendarYear {
 		return ZCalendarMonth(year: components.month, month: components.year)
 	}
 
-	var previousCalendarMonth: ZCalendarMonth {
+	public var previousCalendarMonth: ZCalendarMonth {
 		return calendarMonthOffsetByMonths(-1)
 	}
 
-	var nextCalendarMonth: ZCalendarMonth {
+	public var nextCalendarMonth: ZCalendarMonth {
 		return calendarMonthOffsetByMonths(1)
 	}
 
-	var daysInMonth: Int {
+	public var daysInMonth: Int {
 		let firstDayOfMonth = self.firstCalendarDateOfMonth.date
 		
 		let range = _gregorian.rangeOfUnit(NSCalendarUnit.Day, inUnit: NSCalendarUnit.Month, forDate: firstDayOfMonth)
@@ -168,7 +168,7 @@ public func < (lhs: ZCalendarMonth, rhs: ZCalendarMonth) -> Bool {
 //
 
 public class ZCalendarDate: ZCalendarMonth {
-	let day: Int
+	public let day: Int
 
 	public init(year: Int, month: Int, day: Int) {
 		self.day = day
@@ -211,11 +211,11 @@ public class ZCalendarDate: ZCalendarMonth {
 		return 10_000 * self.year + 100 * self.month + self.day;
 	}
 
-	var date: NSDate {
+	public var date: NSDate {
 		return _gregorian.dateFromComponents(self.dateComponents)!
 	}
 
-	var dateComponents: NSDateComponents {
+	public var dateComponents: NSDateComponents {
 		let componets = NSDateComponents()
 		componets.year = self.year
 		componets.month = self.month
@@ -223,42 +223,42 @@ public class ZCalendarDate: ZCalendarMonth {
 		return componets
 	}
 
-	var calendarDayOfWeek: ZCalendarDayOfWeek {
+	public var calendarDayOfWeek: ZCalendarDayOfWeek {
 		let components = _gregorian.components(NSCalendarUnit.Weekday, fromDate: self.date)
 		return ZCalendarDayOfWeek(rawValue: components.weekday)!
 	}
 
-	var calendarMonth: ZCalendarMonth {
+	public var calendarMonth: ZCalendarMonth {
 		return ZCalendarMonth(year: self.year, month: self.month)
 	}
 
-	var firstCalendarDayOfYear: ZCalendarDate {
+	public var firstCalendarDayOfYear: ZCalendarDate {
 		return ZCalendarDate(year: self.year, month: 1, day: 1)
 	}
 
-	var previousCalendarDate: ZCalendarDate {
+	public var previousCalendarDate: ZCalendarDate {
 		return self.calendarDateOffsetByDays(-1)
 	}
 
-	var nextCalendarDate: ZCalendarDate {
+	public var nextCalendarDate: ZCalendarDate {
 		return self.calendarDateOffsetByDays(1)
 	}
 
-	func calendarDateOffsetByDays(days: Int) -> ZCalendarDate {
+	public func calendarDateOffsetByDays(days: Int) -> ZCalendarDate {
 		let offsetComponets = NSDateComponents()
 		offsetComponets.day = days
 		let date = _gregorian.dateByAddingComponents(offsetComponets, toDate: self.date, options: .WrapComponents)
 		return ZCalendarDate(date: date!)
 	}
 
-	func calendarDateOffsetByMonth(months: Int) -> ZCalendarDate {
+	public func calendarDateOffsetByMonth(months: Int) -> ZCalendarDate {
 		let offsetComponets = NSDateComponents()
 		offsetComponets.month = months
 		let date = _gregorian.dateByAddingComponents(offsetComponets, toDate: self.date, options: .WrapComponents)
 		return ZCalendarDate(date: date!)
 	}
 
-	func daysSinceCalendarDate(calendarDate: ZCalendarDate) -> Int {
+	public func daysSinceCalendarDate(calendarDate: ZCalendarDate) -> Int {
 		let t1 = self.date.timeIntervalSinceReferenceDate
 		let t2 = calendarDate.date.timeIntervalSinceReferenceDate
 		let secondsInDay: NSTimeInterval = 60 * 60 * 24
