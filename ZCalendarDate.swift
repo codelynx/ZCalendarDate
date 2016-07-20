@@ -2,8 +2,27 @@
 //  ZCalendarDate.swift
 //  ZKit
 //
-//  Created by Kaz Yoshikawa on 2015/04/26.
+//  The MIT License (MIT)
 //
+//  Copyright (c) 2015 Electricwoods LLC, Kaz Yoshikawa.
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy 
+//  of this software and associated documentation files (the "Software"), to deal 
+//  in the Software without restriction, including without limitation the rights 
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+//  copies of the Software, and to permit persons to whom the Software is 
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in 
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+//  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import Foundation
@@ -13,7 +32,7 @@ import Foundation
 //	ZCalendarDayOfWeek
 //
 
-enum ZCalendarDayOfWeek: Int {
+public enum ZCalendarDayOfWeek: Int {
 	case Sunday = 1
 	case Monday = 2
 	case Tuesday = 3
@@ -30,30 +49,30 @@ private let _secondsADay = 60.0 * 60.0 * 24.0
 //	ZCalendarYear
 //
 
-class ZCalendarYear: Equatable, Comparable, Printable {
-	let year: Int
-	init(year: Int) {
+public class ZCalendarYear: Equatable, Comparable, CustomStringConvertible {
+	public let year: Int
+	public init(year: Int) {
 		self.year = year
 	}
-	var description: String {
+	public var description: String {
 		return String(format: "%04d", self.year)
 	}
-	var intValue: Int {
+	public var integerValue: Int {
 		return year
 	}
-	var firstCalendarMonthOfYear: ZCalendarMonth {
+	public var firstCalendarMonthOfYear: ZCalendarMonth {
 		return ZCalendarMonth(year: self.year, month: 1)
 	}
-	var lastCalendarMonthOfYear: ZCalendarMonth {
+	public var lastCalendarMonthOfYear: ZCalendarMonth {
 		return ZCalendarMonth(year: self.year, month: 12)
 	}
 }
 
-func ==(lhs:ZCalendarYear, rhs:ZCalendarYear) -> Bool {
+public func == (lhs:ZCalendarYear, rhs:ZCalendarYear) -> Bool {
 	return lhs.year == rhs.year
 }
 
-func <(lhs: ZCalendarYear, rhs: ZCalendarYear) -> Bool {
+public func < (lhs: ZCalendarYear, rhs: ZCalendarYear) -> Bool {
 	return lhs.year < rhs.year
 }
 
@@ -61,7 +80,7 @@ func <(lhs: ZCalendarYear, rhs: ZCalendarYear) -> Bool {
 //	ZCalendarMonth
 //
 
-class ZCalendarMonth: ZCalendarYear, Equatable, Comparable, Printable {
+public class ZCalendarMonth: ZCalendarYear {
 	let month: Int
 
 	init(year: Int, month: Int) {
@@ -69,15 +88,15 @@ class ZCalendarMonth: ZCalendarYear, Equatable, Comparable, Printable {
 		super.init(year: year)
 	}
 
-	init?(intValue: Int) {
-		var value = intValue
+	init?(integerValue: Int) {
+		var value = integerValue
 		let month = value % 100; value /= 100
 		let year = value
-		var componets = NSDateComponents()
+		let componets = NSDateComponents()
 		componets.year = year
 		componets.month = month
 		componets.day = 1
-		if let date = _gregorian.dateFromComponents(componets) {
+		if let _ = _gregorian.dateFromComponents(componets) {
 			self.month = month
 			super.init(year: year)
 		}
@@ -88,11 +107,11 @@ class ZCalendarMonth: ZCalendarYear, Equatable, Comparable, Printable {
 		}
 	}
 
-	override var description: String {
+	override public var description: String {
 		return String(format: "%04d/%02d", self.year, self.month)
 	}
 
-	override var intValue: Int {
+	override public var integerValue: Int {
 		return 100 * self.year + self.month;
 	}
 
@@ -102,17 +121,17 @@ class ZCalendarMonth: ZCalendarYear, Equatable, Comparable, Printable {
 
 	var lastCalendarDateOfMonth: ZCalendarDate {
 		let firstDateOfMonth = self.firstCalendarDateOfMonth.date
-		let range = _gregorian.rangeOfUnit(NSCalendarUnit.CalendarUnitDay, inUnit: NSCalendarUnit.CalendarUnitMonth, forDate: firstDateOfMonth)
+		let range = _gregorian.rangeOfUnit(.Day, inUnit: .Month, forDate: firstDateOfMonth)
 		return ZCalendarDate(year: self.year, month: self.month, day: range.length)
 	}
 
 	func calendarMonthOffsetByMonths(months: Int) -> ZCalendarMonth {
-		var offsetComponents = NSDateComponents()
+		let offsetComponents = NSDateComponents()
 		offsetComponents.month = months
 
-		var date = _gregorian.dateByAddingComponents(offsetComponents, toDate: self.firstCalendarDateOfMonth.date, options: .WrapComponents)
-		let options: NSCalendarUnit = .CalendarUnitYear | .CalendarUnitMonth
-		var components = _gregorian.components(options, fromDate: date!)
+		let date = _gregorian.dateByAddingComponents(offsetComponents, toDate: self.firstCalendarDateOfMonth.date, options: .WrapComponents)
+		let options: NSCalendarUnit = [.Year, .Month]
+		let components = _gregorian.components(options, fromDate: date!)
 		return ZCalendarMonth(year: components.month, month: components.year)
 	}
 
@@ -127,18 +146,19 @@ class ZCalendarMonth: ZCalendarYear, Equatable, Comparable, Printable {
 	var daysInMonth: Int {
 		let firstDayOfMonth = self.firstCalendarDateOfMonth.date
 		
-		let range = _gregorian.rangeOfUnit(NSCalendarUnit.CalendarUnitDay, inUnit: NSCalendarUnit.CalendarUnitMonth, forDate: firstDayOfMonth)
+		let range = _gregorian.rangeOfUnit(NSCalendarUnit.Day, inUnit: NSCalendarUnit.Month, forDate: firstDayOfMonth)
 		assert(range.location != NSNotFound)
 		assert(range.length != NSNotFound)
 		return range.length
 	}
 
 }
-func ==(lhs:ZCalendarMonth, rhs:ZCalendarMonth) -> Bool {
+
+public func == (lhs:ZCalendarMonth, rhs:ZCalendarMonth) -> Bool {
 	return lhs.year == rhs.year && lhs.month == rhs.month
 }
 
-func <(lhs: ZCalendarMonth, rhs: ZCalendarMonth) -> Bool {
+public func < (lhs: ZCalendarMonth, rhs: ZCalendarMonth) -> Bool {
 	return lhs.year < rhs.year && lhs.month < rhs.month
 }
 
@@ -147,32 +167,32 @@ func <(lhs: ZCalendarMonth, rhs: ZCalendarMonth) -> Bool {
 //	ZCalendarDate
 //
 
-class ZCalendarDate: ZCalendarMonth, Equatable, Comparable, Printable {
+public class ZCalendarDate: ZCalendarMonth {
 	let day: Int
 
-	init(year: Int, month: Int, day: Int) {
+	public init(year: Int, month: Int, day: Int) {
 		self.day = day
 		super.init(year: year, month: month)
 	}
 
-	init(date: NSDate) {
+	public init(date: NSDate) {
 		let calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
-		let options: NSCalendarUnit = .CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay
-		var components = calendar.components(options, fromDate: date)
+		let options: NSCalendarUnit = [.Year, .Month, .Day]
+		let components = calendar.components(options, fromDate: date)
 		self.day = components.day
 		super.init(year: components.year, month: components.month)
 	}
 
-	override init?(intValue: Int) {
-		var value = intValue
+	override public init?(integerValue: Int) {
+		var value = integerValue
 		let day = value % 100; value /= 100
 		let month = value % 100; value /= 100
 		let year = value
-		var componets = NSDateComponents()
+		let componets = NSDateComponents()
 		componets.year = year
 		componets.month = month
 		componets.day = day
-		if let date = _gregorian.dateFromComponents(componets) {
+		if let _ = _gregorian.dateFromComponents(componets) {
 			self.day = month
 			super.init(year: year, month: month)
 		}
@@ -183,11 +203,11 @@ class ZCalendarDate: ZCalendarMonth, Equatable, Comparable, Printable {
 		}
 	}
 
-	override var description: String {
+	override public var description: String {
 		return String(format: "%04d/%02d/%02d", self.year, self.month, self.day)
 	}
 
-	override var intValue: Int {
+	override public var integerValue: Int {
 		return 10_000 * self.year + 100 * self.month + self.day;
 	}
 
@@ -196,7 +216,7 @@ class ZCalendarDate: ZCalendarMonth, Equatable, Comparable, Printable {
 	}
 
 	var dateComponents: NSDateComponents {
-		var componets = NSDateComponents()
+		let componets = NSDateComponents()
 		componets.year = self.year
 		componets.month = self.month
 		componets.day = day
@@ -204,7 +224,7 @@ class ZCalendarDate: ZCalendarMonth, Equatable, Comparable, Printable {
 	}
 
 	var calendarDayOfWeek: ZCalendarDayOfWeek {
-		var components = _gregorian.components(NSCalendarUnit.CalendarUnitWeekday, fromDate: self.date)
+		let components = _gregorian.components(NSCalendarUnit.Weekday, fromDate: self.date)
 		return ZCalendarDayOfWeek(rawValue: components.weekday)!
 	}
 
@@ -225,28 +245,36 @@ class ZCalendarDate: ZCalendarMonth, Equatable, Comparable, Printable {
 	}
 
 	func calendarDateOffsetByDays(days: Int) -> ZCalendarDate {
-		var offsetComponets = NSDateComponents()
+		let offsetComponets = NSDateComponents()
 		offsetComponets.day = days
-		var date = _gregorian.dateByAddingComponents(offsetComponets, toDate: self.date, options: .WrapComponents)
+		let date = _gregorian.dateByAddingComponents(offsetComponets, toDate: self.date, options: .WrapComponents)
 		return ZCalendarDate(date: date!)
 	}
 
-	func calendarDateOffsetByMonth(months: Int) {
-		var offsetComponets = NSDateComponents()
+	func calendarDateOffsetByMonth(months: Int) -> ZCalendarDate {
+		let offsetComponets = NSDateComponents()
 		offsetComponets.month = months
-		var date = _gregorian.dateByAddingComponents(offsetComponets, toDate: self.date, options: .WrapComponents)
+		let date = _gregorian.dateByAddingComponents(offsetComponets, toDate: self.date, options: .WrapComponents)
+		return ZCalendarDate(date: date!)
+	}
+
+	func daysSinceCalendarDate(calendarDate: ZCalendarDate) -> Int {
+		let t1 = self.date.timeIntervalSinceReferenceDate
+		let t2 = calendarDate.date.timeIntervalSinceReferenceDate
+		let secondsInDay: NSTimeInterval = 60 * 60 * 24
+		return Int(floor((t2 - t1) / secondsInDay))
 	}
 }
 
-func ==(lhs:ZCalendarDate, rhs:ZCalendarDate) -> Bool {
+public func == (lhs:ZCalendarDate, rhs:ZCalendarDate) -> Bool {
 	return lhs.year == rhs.year && lhs.month == rhs.month && lhs.day == rhs.day
 }
 
-func <(lhs: ZCalendarDate, rhs: ZCalendarDate) -> Bool {
+public func < (lhs: ZCalendarDate, rhs: ZCalendarDate) -> Bool {
 	return lhs.year < rhs.year && lhs.month < rhs.month && lhs.day < rhs.day
 }
 
-func -(lhs: ZCalendarDate, rhs: ZCalendarDate) -> Int {
+public func - (lhs: ZCalendarDate, rhs: ZCalendarDate) -> Int {
 	let d1 = lhs.date
 	let d2 = rhs.date
 	let t = d1.timeIntervalSinceReferenceDate - d2.timeIntervalSinceReferenceDate
@@ -254,12 +282,12 @@ func -(lhs: ZCalendarDate, rhs: ZCalendarDate) -> Int {
 	return Int(days)
 }
 
-func +(lhs: ZCalendarDate, rhs: Int) -> ZCalendarDate {
+public func + (lhs: ZCalendarDate, rhs: Int) -> ZCalendarDate {
 	let interval = _secondsADay * Double(rhs)
 	return ZCalendarDate(date: lhs.date.dateByAddingTimeInterval(interval))
 }
 
-func -(lhs: ZCalendarDate, rhs: Int) -> ZCalendarDate {
+public func - (lhs: ZCalendarDate, rhs: Int) -> ZCalendarDate {
 	let interval = _secondsADay * Double(rhs)
 	return ZCalendarDate(date: lhs.date.dateByAddingTimeInterval(-interval))
 }
