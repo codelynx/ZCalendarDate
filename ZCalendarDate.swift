@@ -127,12 +127,18 @@ public class ZCalendarMonth: ZCalendarYear {
 
 	public func calendarMonthOffsetByMonths(months: Int) -> ZCalendarMonth {
 		let offsetComponents = NSDateComponents()
-		offsetComponents.month = months
-
+		offsetComponents.month = months % 12
+		offsetComponents.year = months / 12
 		let date = _gregorian.dateByAddingComponents(offsetComponents, toDate: self.firstCalendarDateOfMonth.date, options: .WrapComponents)
 		let options: NSCalendarUnit = [.Year, .Month]
 		let components = _gregorian.components(options, fromDate: date!)
-		return ZCalendarMonth(year: components.month, month: components.year)
+		return ZCalendarMonth(year: components.year, month: components.month)
+	}
+
+	public func offsetMonths(calendarMonth: ZCalendarMonth) -> Int {
+		let months = calendarMonth.month - self.month
+		let years = calendarMonth.year - self.year
+		return years * 12 - months
 	}
 
 	public var previousCalendarMonth: ZCalendarMonth {
@@ -152,14 +158,26 @@ public class ZCalendarMonth: ZCalendarYear {
 		return range.length
 	}
 
+	public func day(day: Int) -> ZCalendarDate {
+		return ZCalendarDate(year: self.year, month: self.month, day: day)
+	}
+
 }
 
-public func == (lhs:ZCalendarMonth, rhs:ZCalendarMonth) -> Bool {
+public func == (lhs: ZCalendarMonth, rhs: ZCalendarMonth) -> Bool {
 	return lhs.year == rhs.year && lhs.month == rhs.month
 }
 
 public func < (lhs: ZCalendarMonth, rhs: ZCalendarMonth) -> Bool {
 	return lhs.year < rhs.year && lhs.month < rhs.month
+}
+
+public func + (lhs: ZCalendarMonth, rhs: Int) -> ZCalendarMonth {
+	return lhs.calendarMonthOffsetByMonths(rhs)
+}
+
+public func - (lhs: ZCalendarMonth, rhs: ZCalendarMonth) -> Int {
+	return lhs.offsetMonths(rhs)
 }
 
 
@@ -175,7 +193,7 @@ public class ZCalendarDate: ZCalendarMonth {
 		super.init(year: year, month: month)
 	}
 
-	public init(date: NSDate) {
+	public init(date: NSDate = NSDate()) {
 		let calendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
 		let options: NSCalendarUnit = [.Year, .Month, .Day]
 		let components = calendar.components(options, fromDate: date)
