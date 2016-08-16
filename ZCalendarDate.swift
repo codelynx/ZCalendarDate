@@ -33,13 +33,13 @@ import Foundation
 //
 
 public enum ZCalendarDayOfWeek: Int {
-	case Sunday = 1
-	case Monday = 2
-	case Tuesday = 3
-	case Wednesday = 4
-	case Thrusday = 5
-	case Friday = 6
-	case Saturday = 7
+	case sunday = 1
+	case monday = 2
+	case tuesday = 3
+	case wednesday = 4
+	case thrusday = 5
+	case friday = 6
+	case saturday = 7
 }
 
 private let _gregorian = Calendar(identifier: .gregorian)
@@ -125,7 +125,7 @@ public class ZCalendarMonth: ZCalendarYear {
 		return ZCalendarDate(year: self.year, month: self.month, day: range.count)
 	}
 	
-	public func calendarMonthOffsetByMonths(months: Int) -> ZCalendarMonth {
+	public func calendarMonthOffset(byMonths months: Int) -> ZCalendarMonth {
 		var offsetComponents = DateComponents()
 		offsetComponents.month = months % 12
 		offsetComponents.year = months / 12
@@ -141,11 +141,11 @@ public class ZCalendarMonth: ZCalendarYear {
 	}
 	
 	public var previousCalendarMonth: ZCalendarMonth {
-		return calendarMonthOffsetByMonths(months: -1)
+		return calendarMonthOffset(byMonths: -1)
 	}
 	
 	public var nextCalendarMonth: ZCalendarMonth {
-		return calendarMonthOffsetByMonths(months: 1)
+		return calendarMonthOffset(byMonths: 1)
 	}
 	
 	public var daysInMonth: Int {
@@ -169,7 +169,7 @@ public func < (lhs: ZCalendarMonth, rhs: ZCalendarMonth) -> Bool {
 }
 
 public func + (lhs: ZCalendarMonth, rhs: Int) -> ZCalendarMonth {
-	return lhs.calendarMonthOffsetByMonths(months: rhs)
+	return lhs.calendarMonthOffset(byMonths: rhs)
 }
 
 public func - (lhs: ZCalendarMonth, rhs: ZCalendarMonth) -> Int {
@@ -250,28 +250,28 @@ public class ZCalendarDate: ZCalendarMonth {
 	}
 	
 	public var previousCalendarDate: ZCalendarDate {
-		return self.calendarDateOffsetByDays(days: -1)
+		return self.calendarDateOffset(byDays: -1)
 	}
 	
 	public var nextCalendarDate: ZCalendarDate {
-		return self.calendarDateOffsetByDays(days: 1)
+		return self.calendarDateOffset(byDays: 1)
 	}
 	
-	public func calendarDateOffsetByDays(days: Int) -> ZCalendarDate {
+	public func calendarDateOffset(byDays days: Int) -> ZCalendarDate {
 		var offsetComponets = DateComponents()
 		offsetComponets.day = days
 		let date = _gregorian.date(byAdding: offsetComponets, to: self.date)
 		return ZCalendarDate(date: date!)
 	}
 	
-	public func calendarDateOffsetByMonth(months: Int) -> ZCalendarDate {
+	public func calendarDateOffset(byMonths months: Int) -> ZCalendarDate {
 		var offsetComponets = DateComponents()
 		offsetComponets.month = months
 		let date = _gregorian.date(byAdding: offsetComponets, to: self.date)
 		return ZCalendarDate(date: date!)
 	}
 	
-	public func daysSinceCalendarDate(calendarDate: ZCalendarDate) -> Int {
+	public func daysSince(calendarDate: ZCalendarDate) -> Int {
 		let t1 = self.date.timeIntervalSinceReferenceDate
 		let t2 = calendarDate.date.timeIntervalSinceReferenceDate
 		let secondsInDay: TimeInterval = 60 * 60 * 24
