@@ -135,7 +135,7 @@ public class ZCalendarMonth: ZCalendarYear {
 	}
 	
 	public func offsetMonths(calendarMonth: ZCalendarMonth) -> Int {
-		return (self.year * 12 + self.month) - (calendarMonth.year * 12 + calendarMonth.month)
+		return (self.year * 12 + (self.month - 1)) - (calendarMonth.year * 12 + (calendarMonth.month - 1))
 	}
 	
 	public var previousCalendarMonth: ZCalendarMonth {
