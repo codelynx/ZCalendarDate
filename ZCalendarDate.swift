@@ -167,9 +167,8 @@ public struct ZCalendarMonth: ZCalendarMonthType {
 		var offsetComponents = DateComponents()
 		offsetComponents.month = months % 12
 		offsetComponents.year = months / 12
-		let date = (_gregorian as NSCalendar).date(byAdding: offsetComponents, to: self.firstCalendarDateOfMonth.date, options: .wrapComponents)
-		let options: NSCalendar.Unit = [.year, .month]
-		let components = (_gregorian as NSCalendar).components(options, from: date!)
+		let date = _gregorian.date(byAdding: offsetComponents, to: self.firstCalendarDateOfMonth.date)
+		let components = _gregorian.dateComponents([.year, .month], from: date!)
 		return ZCalendarMonth(year: components.year!, month: components.month!)
 	}
 
@@ -282,7 +281,7 @@ public struct ZCalendarDate: ZCalendarDateType {
 	}
 
 	public var calendarDayOfWeek: ZCalendarDayOfWeek {
-		let components = (_gregorian as NSCalendar).components(NSCalendar.Unit.weekday, from: self.date)
+		let components = _gregorian.dateComponents([.weekday], from: self.date)
 		return ZCalendarDayOfWeek(rawValue: components.weekday!)!
 	}
 
@@ -301,14 +300,14 @@ public struct ZCalendarDate: ZCalendarDateType {
 	public func calendarDate(offsetByDays days: Int) -> ZCalendarDate {
 		var offsetComponets = DateComponents()
 		offsetComponets.day = days
-		let date = (_gregorian as NSCalendar).date(byAdding: offsetComponets, to: self.date, options: .wrapComponents)
+		let date = _gregorian.date(byAdding: offsetComponets, to: self.date)
 		return ZCalendarDate(date: date!)
 	}
 
 	public func calendarDate(offsetByMonths months: Int) -> ZCalendarDate {
 		var offsetComponets = DateComponents()
 		offsetComponets.month = months
-		let date = (_gregorian as NSCalendar).date(byAdding: offsetComponets, to: self.date, options: .wrapComponents)
+		let date = _gregorian.date(byAdding: offsetComponets, to: self.date)
 		return ZCalendarDate(date: date!)
 	}
 
