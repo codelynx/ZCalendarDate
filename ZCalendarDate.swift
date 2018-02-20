@@ -214,6 +214,10 @@ public func + (lhs: ZCalendarMonth, rhs: Int) -> ZCalendarMonth {
 	return lhs.calendarMonth(offsetByMonths: rhs)
 }
 
+public func - (lhs: ZCalendarMonth, rhs: Int) -> ZCalendarMonth {
+	return lhs.calendarMonth(offsetByMonths: -rhs)
+}
+
 public func - (lhs: ZCalendarMonth, rhs: ZCalendarMonth) -> Int {
 	return lhs.offsetMonths(rhs)
 }
@@ -253,7 +257,7 @@ public struct ZCalendarDate: ZCalendarDateType {
 		componets.day = day
 		if let _ = _gregorian.date(from: componets) {
 			self.calendarMonth = ZCalendarMonth(year: year, month: month)
-			self.day = month
+			self.day = day
 		}
 		else {
 			return nil

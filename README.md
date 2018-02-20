@@ -72,4 +72,34 @@ if d1.calendarDayOfWeek == ZCalendarDayOfWeek.Sunday {
 }
 ```
 
+```sample.swift
+let y16 = ZCalendarYear(year: 2016)  // 2016
+let y16m01 = y16.firstCalendarMonthOfYear  // 2016.01
+let y16m12 = y16.lastCalendarMonthOfYear  // 2016.12
 
+let y16m01d01 = y16m01.firstCalendarDateOfMonth  // 2016.01.01
+let y16m01d31 = y16m01.lastCalendarDateOfMonth  // 2016.01.31
+
+y16.integerValue  // 2016
+y16m12.integerValue  // 201612
+y16m01d31.integerValue  // 20160131
+
+
+let y16m04 = y16m01.calendarMonth(offsetByMonths: 3)  // 2016.04
+let y17m01 = y16m01.calendarMonth(offsetByMonths: 12)  // 2017.01
+let y15m01 = y16m01.calendarMonth(offsetByMonths: -12)  // 2015.01
+
+y16m04.nextCalendarMonth  // 2016.05
+y16m04.previousCalendarMonth  // 2016.03
+
+let y16m02 = ZCalendarMonth(year: 2016, month: 02) // 2016.02
+y16m02.daysInMonth // 29
+
+let y16m02d29 = y16m02.day(29)  // 2016.02.29
+let y16m03d01 = y16m02d29.nextCalendarDate  // 2016.03.01
+y16m02d29 == y16m03d01.previousCalendarDate  // true
+
+y16m02d29.calendarDayOfWeek // monday
+
+
+```
